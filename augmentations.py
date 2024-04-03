@@ -9,6 +9,9 @@ __all__ = [
     "medium_augmentations",
     "hard_augmentations",
     "get_augmentations",
+    "my_augmentations_1",
+    "my_augmentations_2",
+    "my_augmentations_3"
 ]
 
 
@@ -35,6 +38,16 @@ def crop_transform_xview2(image_size: Tuple[int, int], min_scale=0.4, max_scale=
         ),
     )
 
+def light_augmentations(mask_dropout=True) -> List[A.DualTransform]:
+    return [
+        # D4 Augmentations
+        A.Downscale(0.3, 0.3, always_apply=True),
+        A.RandomRotate90(p=1),
+        A.Transpose(p=0.5),
+        A.RandomBrightnessContrast(),
+        A.ShiftScaleRotate(scale_limit=0.05, rotate_limit=15, border_mode=cv2.BORDER_CONSTANT),
+    ]
+
 
 def safe_augmentations() -> List[A.DualTransform]:
     return [
@@ -44,14 +57,34 @@ def safe_augmentations() -> List[A.DualTransform]:
     ]
 
 
-def light_augmentations(mask_dropout=True) -> List[A.DualTransform]:
+def my_augmentations_1(mask_dropout=True) -> List[A.DualTransform]:
     return [
         # D4 Augmentations
-        A.Downscale(0.3, 0.3, always_apply=True),
         A.RandomRotate90(p=1),
-        A.Transpose(p=0.5),
-        A.RandomBrightnessContrast(),
-        A.ShiftScaleRotate(scale_limit=0.05, rotate_limit=15, border_mode=cv2.BORDER_CONSTANT),
+        A.HorizontalFlip(p=0.5),
+        A.GaussianBlur(blur_limit=(3, 7)),
+        A.RandomBrightnessContrast(brightness_by_max=True),
+        A.GaussNoise()
+    ]
+
+def my_augmentations_2(mask_dropout=True) -> List[A.DualTransform]:
+    return [
+        # D4 Augmentations
+        A.RandomScale(),
+        A.ShiftScaleRotate(scale_limit=0.1, rotate_limit=15, border_mode=cv2.BORDER_CONSTANT),
+        A.RandomFog(fog_coef_lower=0.01, fog_coef_upper=0.3, p=0.1),
+        A.CLAHE(),
+        A.HueSaturationValue(),
+    ]
+
+def my_augmentations_3(mask_dropout=True) -> List[A.DualTransform]:
+    return [
+        # D4 Augmentations
+        A.CoarseDropout(max_holes=4, max_height=32, max_width=32, min_holes=1, min_height=8, min_width=8),
+        A.RandomBrightnessContrast(brightness_by_max=True),
+        A.RandomShadow(p=0.3),
+        A.RandomGamma(),
+        A.RGBShift(),
     ]
 
 
@@ -145,6 +178,12 @@ def get_augmentations(augmentation: str, for_3ch_img=True) -> List[A.DualTransfo
         aug_transform = light_augmentations()
     elif augmentation == "safe":
         aug_transform = safe_augmentations()
+    elif augmentation == "aug_var1":
+        aug_transform = my_augmentations_1()
+    elif augmentation == "aug_var2":
+        aug_transform = my_augmentations_2()
+    elif augmentation == "aug_var3":
+        aug_transform = my_augmentations_3()
     else:
         aug_transform = []
 
