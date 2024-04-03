@@ -81,7 +81,7 @@ def medium_augmentations(for_3ch_img=True, mask_dropout=True) -> List[A.DualTran
                 # A.RGBShift(),
                 A.RandomGamma(),
             ]
-        )
+        )# test
         ,
         # Weather effects
         A.RandomFog(fog_coef_lower=0.01, fog_coef_upper=0.3, p=0.1) if for_3ch_img else A.NoOp(),
