@@ -24,6 +24,7 @@ class SegmentationTrainer:
             log_dir='../logs/',
             model_name='unet',
             encoder_name='efficientnet-b0',
+            optimizer_name='Adam',
             encoder_weights='imagenet',
             activation='sigmoid',
             device='cuda',
@@ -34,6 +35,7 @@ class SegmentationTrainer:
             train_workers_count=1,
             valid_workers_count=1,
     ):
+        self.optimizer_name = optimizer_name
         self.encoder_name = encoder_name
         self.model_name = model_name
         self.encoder_weights = encoder_weights
@@ -114,7 +116,7 @@ class SegmentationTrainer:
             smp_utils.metrics.IoU(threshold=0.5),
         ]
 
-        self._optimizer = torch.optim.Adam([
+        self._optimizer = torch.optim.optimizer_name([
             dict(params=self._model.parameters(), lr=learning_rate),
         ])
 
@@ -212,6 +214,7 @@ class SegmentationTrainer:
                     'loss': self._loss,
                     'model_name': self.model_name,
                     'encoder_name': self.encoder_name,
+                    'optimizer_name': self.optimizer_name,
                     'encoder_weights': self.encoder_weights,
                     'activation': self.activation,
                     'max_score': max_score,
